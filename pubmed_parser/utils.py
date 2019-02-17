@@ -27,12 +27,12 @@ def read_xml(path, nxml=False):
         tree = etree.parse(path)
     except:
         try:
-            tree = etree.fromstring(path)
+            tree = etree.ElementTree(etree.fromstring(path))
         except Exception as e:
             print("Error: it was not able to read a path, a file-like object, or a string as an XML")
             raise
-    if '.nxml' in path or nxml:
-        remove_namespace(tree) # strip namespace for
+    # if '.nxml' in path or nxml:
+    #     remove_namespace(tree) # strip namespace for
     return tree
 
 

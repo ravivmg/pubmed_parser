@@ -31,8 +31,8 @@ def read_xml(path, nxml=False):
         except Exception as e:
             print("Error: it was not able to read a path, a file-like object, or a string as an XML")
             raise
-    # if '.nxml' in path or nxml:
-    #     remove_namespace(tree) # strip namespace for
+    if nxml:
+        remove_namespace(tree) # strip namespace for
     return tree
 
 

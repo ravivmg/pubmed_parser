@@ -304,30 +304,36 @@ def parse_article_info(medline, year_info_only, nlm_category):
     else:
         abstract = ''
 
+    authors_info = list()
     if article.find('AuthorList') is not None:
         authors = article.find('AuthorList').getchildren()
-        authors_info = list()
-        affiliations_info = list()
-        for author in authors:
-            if author.find('Initials') is not None:
-                firstname = author.find('Initials').text or ''
+        for author_pos, author in enumerate(authors):
+            if author.find('ForeName') is not None:
+                firstname = author.find('ForeName').text or ''
             else:
                 firstname = ''
             if author.find('LastName') is not None:
                 lastname = author.find('LastName').text or ''
             else:
                 lastname = ''
-            if author.find('AffiliationInfo/Affiliation') is not None:
-                affiliation = author.find('AffiliationInfo/Affiliation').text or ''
+            if author.find('Initials') is not None:
+                initials = author.find('Initials').text or ''
             else:
-                affiliation = ''
-            authors_info.append((firstname + ' ' + lastname).strip())
-            affiliations_info.append(affiliation)
-        affiliations_info = '\n'.join([a for a in affiliations_info if a is not ''])
-        authors_info = '; '.join(authors_info)
-    else:
-        affiliations_info = ''
-        authors_info = ''
+                initials = ''
+            affiliations = author.findall('AffiliationInfo')
+            if affiliations is not None:
+                affiliations = [
+                    affiliation.find('Affiliation').text
+                    for affiliation in affiliations]
+            else:
+                affiliations = []
+            authors_info.append({
+                'forename': firstname,
+                'lastname': lastname,
+                'initials': initials,
+                'affiliations': affiliations,
+                'author_pos': author_pos
+                })
 
     journal = article.find('Journal')
     journal_name = ' '.join(journal.xpath('Title/text()'))
@@ -343,7 +349,6 @@ def parse_article_info(medline, year_info_only, nlm_category):
                 'abstract': abstract,
                 'journal': journal_name,
                 'author': authors_info,
-                'affiliation': affiliations_info,
                 'pubdate': pubdate,
                 'pmid': pmid,
                 'mesh_terms': mesh_terms,

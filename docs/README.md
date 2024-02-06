@@ -1,10 +1,6 @@
-## Jekyll page for Pubmed Parser
+# Pubmed Parser Documentation
 
-We can update the page by running `python convert_readme.py`. This will convert `README.md`
-to `index.md` (used for Jekyll page).
+We use [`sphinx`](https://www.sphinx-doc.org/en/master/) to generate our documentation page.
 
-We can serve the server locally to
-
-```bash
-jekyll serve
-```
+To build documentation page, run `make html`. All static files will be built in
+`_build/html/` where you can open them on the web browser.

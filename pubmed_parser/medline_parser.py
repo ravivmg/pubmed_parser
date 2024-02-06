@@ -80,6 +80,34 @@ def parse_doi(pubmed_article):
             doi = ""
     return doi
 
+def parse_pmc(pubmed_article):
+    """
+    A function to parse PMC from a given Pubmed Article tree
+
+    Parameters
+    ----------
+    pubmed_article: Element
+        The lxml node pointing to a medline document
+
+    Returns
+    -------
+    pmc: str
+        A string of pmc parsed from a given ``pubmed_article``
+    """
+    medline = pubmed_article.find("MedlineCitation")
+    article = medline.find("Article")
+
+    article_ids = pubmed_article.find("PubmedData/ArticleIdList")
+    if article_ids is not None:
+        pmc = article_ids.find('ArticleId[@IdType="pmc"]')
+        pmc = (
+            (pmc.text.strip() if pmc.text is not None else "")
+            if pmc is not None
+            else ""
+        )
+    else:
+        pmc = ""
+    return pmc
 
 def parse_mesh_terms(medline, parse_subs=False):
     """
@@ -271,19 +299,15 @@ def parse_other_id(medline):
     other_id: str
         String of semi-colon separated Other IDs found in the document
     """
-    pmc = ""
     other_id = list()
     oids = medline.findall("OtherID")
     if oids is not None:
         for oid in oids:
-            if "PMC" in oid.text:
-                pmc = oid.text
-            else:
-                other_id.append(oid.text)
+            other_id.append(oid.text)
         other_id = "; ".join(other_id)
     else:
         other_id = ""
-    return {"pmc": pmc, "other_id": other_id}
+    return {"other_id": other_id}
 
 
 def parse_journal_info(medline):
@@ -657,6 +681,7 @@ def parse_article_info(
 
     pmid = parse_pmid(pubmed_article)
     doi = parse_doi(pubmed_article)
+    pmc = parse_pmc(pubmed_article)
     references = parse_references(pubmed_article, reference_list)
     pubdate = date_extractor(journal, year_info_only)
     mesh_terms = parse_mesh_terms(medline, parse_subs=parse_subs)
@@ -674,6 +699,7 @@ def parse_article_info(
         "authors": authors,
         "pubdate": pubdate,
         "pmid": pmid,
+        "pmc": pmc,
         "mesh_terms": mesh_terms,
         "publication_types": publication_types,
         "chemical_list": chemical_list,

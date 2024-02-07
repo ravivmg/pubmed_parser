@@ -211,7 +211,8 @@ def parse_pubmed_xml(path, include_path=False, nxml=False):
             )
         except BaseException:
             author_list.append(["", "", ref_id_list])
-    author_list = flatten_zip_author(author_list)
+    
+    # author_list = flatten_zip_author(author_list)
 
     coi_statement = '\n'.join(parse_coi_statements(tree))
 

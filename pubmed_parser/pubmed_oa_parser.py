@@ -201,16 +201,22 @@ def parse_pubmed_xml(path, include_path=False, nxml=False):
             ref_id_list = [str(a.attrib["rid"]) for a in author_aff]
         except BaseException:
             ref_id_list = ""
+        author_roles = author.findall('role')
+        try:
+            role_list = [str(r.text) for r in author_roles]
+        except BaseException:
+            role_list = ""
         try:
             author_list.append(
                 [
                     author.find("name/surname").text,
                     author.find("name/given-names").text,
                     ref_id_list,
+                    role_list
                 ]
             )
         except BaseException:
-            author_list.append(["", "", ref_id_list])
+            author_list.append(["", "", ref_id_list,role_list])
     
     # author_list = flatten_zip_author(author_list)
 

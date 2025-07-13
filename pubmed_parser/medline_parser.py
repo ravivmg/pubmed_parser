@@ -163,7 +163,7 @@ def parse_mesh_terms_with_subs(medline):
         for m in mesh.getchildren():
             term = m.find("DescriptorName").attrib.get("UI", "") + ":" + \
                    m.find("DescriptorName").text
-            if m.attrib.get("MajorTopicYN", "") == "Y":
+            if m.find("DescriptorName").attrib.get("MajorTopicYN", "") == "Y":
                 term += "*"
             for q in m.findall("QualifierName"):
                 term += " / " + q.attrib.get("UI", "") + ":" + \
